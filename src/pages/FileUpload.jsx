@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Box, Button, Input, VStack, Text, useToast } from "@chakra-ui/react";
+import { Box, Button, Input, VStack, Text, useToast, Divider, Heading } from "@chakra-ui/react";
 
 const FileUpload = () => {
   const [files, setFiles] = useState([]);
+  const [analysisResults, setAnalysisResults] = useState([]);
   const toast = useToast();
 
   const handleFileChange = (event) => {
@@ -29,9 +30,34 @@ const FileUpload = () => {
 
     console.log("Categorized Files:", categorizedFiles);
 
+    // Simulate AI-powered analysis
+    const results = categorizedFiles.map((file) => {
+      if (file.type === "image" || file.type === "video") {
+        return {
+          name: file.name,
+          insights: "Detected objects and scenes in the media.",
+          suggestions: "Consider these objects/scenes for further investigation."
+        };
+      } else if (file.type === "application") {
+        return {
+          name: file.name,
+          insights: "Extracted key information and entities from the document.",
+          suggestions: "Review the extracted information for relevance."
+        };
+      } else {
+        return {
+          name: file.name,
+          insights: "No specific analysis available.",
+          suggestions: "No suggestions available."
+        };
+      }
+    });
+
+    setAnalysisResults(results);
+
     toast({
       title: "Files uploaded.",
-      description: "Your files have been uploaded and categorized.",
+      description: "Your files have been uploaded and analyzed.",
       status: "success",
       duration: 5000,
       isClosable: true,
@@ -48,6 +74,19 @@ const FileUpload = () => {
         <Input type="file" multiple onChange={handleFileChange} />
         <Button colorScheme="blue" onClick={handleUpload}>Upload</Button>
       </VStack>
+      <Divider my={4} />
+      {analysisResults.length > 0 && (
+        <Box>
+          <Heading as="h2" size="lg" mb={4}>Analysis Results</Heading>
+          {analysisResults.map((result, index) => (
+            <Box key={index} p={4} borderWidth="1px" borderRadius="md" mb={4}>
+              <Text fontSize="md" fontWeight="bold">{result.name}</Text>
+              <Text fontSize="sm"><strong>Insights:</strong> {result.insights}</Text>
+              <Text fontSize="sm"><strong>Suggestions:</strong> {result.suggestions}</Text>
+            </Box>
+          ))}
+        </Box>
+      )}
     </Box>
   );
 };
